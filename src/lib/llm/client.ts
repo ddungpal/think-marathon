@@ -21,7 +21,7 @@ function getOpenAIClient(): OpenAI {
 export async function generateDiagnosis(
   context: NormalizedInput
 ): Promise<DiagnosisResult> {
-  const prompt = buildPrompt(context);
+  const prompt = await buildPrompt(context);
   const openai = getOpenAIClient(); // 런타임에 클라이언트 생성
 
   try {

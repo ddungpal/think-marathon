@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loadConfig, getConfig, loadLearningPoints } from '@/lib/config/loader';
 import { loadLLMConfig } from '@/lib/config/llm-config-loader';
+import { loadPDFConfig } from '@/lib/pdf/loader';
 import { normalizeInput } from '@/lib/config/mapper';
 import { validateInput } from '@/lib/validation/input-validator';
 import { generateCacheKey } from '@/lib/utils/cache-key';
@@ -15,6 +16,7 @@ import { DiagnoseRequest, DiagnoseResponse } from '@/types/api';
 let configLoaded = false;
 let llmConfigLoaded = false;
 let learningPointsLoaded = false;
+let pdfConfigLoaded = false;
 
 async function ensureConfigLoaded() {
   if (!configLoaded) {
@@ -37,6 +39,19 @@ async function ensureLearningPointsLoaded() {
   }
 }
 
+async function ensurePDFConfigLoaded() {
+  if (!pdfConfigLoaded) {
+    try {
+      await loadPDFConfig();
+      pdfConfigLoaded = true;
+    } catch (error) {
+      // PDF 설정 로드 실패 시에도 계속 진행 (선택적 기능)
+      console.warn('PDF 설정 로드 실패 (무시됨):', error);
+      pdfConfigLoaded = true; // 실패해도 true로 설정하여 재시도 방지
+    }
+  }
+}
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   let cacheHit = false;
@@ -46,6 +61,7 @@ export async function POST(request: NextRequest) {
     await ensureConfigLoaded();
     await ensureLLMConfigLoaded();
     await ensureLearningPointsLoaded();
+    await ensurePDFConfigLoaded();
     const config = getConfig();
 
     // 요청 파싱

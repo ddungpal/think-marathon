@@ -3,8 +3,9 @@ import { LLMPromptConfig } from '@/types/llm-config';
 import { getLLMConfig } from '@/lib/config/llm-config-loader';
 import { getConfig } from '@/lib/config/loader';
 import { mapIncomeToBracket } from '@/lib/config/bracket-mapper';
+import { loadPDFContents, loadPDFConfig } from '@/lib/pdf/loader';
 
-export function buildPrompt(context: NormalizedInput, config?: LLMPromptConfig): string {
+export async function buildPrompt(context: NormalizedInput, config?: LLMPromptConfig): Promise<string> {
   // Config가 제공되지 않으면 기본값 사용
   const llmConfig = config || getLLMConfig();
 
@@ -60,6 +61,41 @@ ${bracketLearningPoint.cognitive_gaps.map((g, i) => `${i + 1}. ${g}`).join('\n')
 ${bracketLearningPoint.learning_points.map((l, i) => `${i + 1}. ${l}`).join('\n')}
 
 **중요**: 위 내용은 참고용이며, 진단 결과에서는 구체적인 숫자나 구간 이름을 언급하지 않고, 사고 패턴과 학습 방향에 집중하세요.` : '';
+
+  // PDF 내용 로드 (비동기) - 선택적 기능이므로 에러가 발생해도 계속 진행
+  let pdfSection = '';
+  try {
+    const pdfConfig = await loadPDFConfig();
+    if (pdfConfig.enabled) {
+      try {
+        const pdfContents = await loadPDFContents();
+        if (pdfContents.size > 0) {
+          const pdfSections = Array.from(pdfContents.values()).map((pdf) => `
+## 참고 문서: ${pdf.title}
+
+${pdf.text}
+
+---
+`);
+          pdfSection = `
+## 추가 학습 자료 (PDF 문서)
+
+다음 문서들을 참고하여 진단을 수행하세요. 문서의 내용을 바탕으로 더 정확하고 깊이 있는 진단을 제공할 수 있습니다.
+
+${pdfSections.join('\n')}
+
+**중요**: PDF 문서의 내용을 참고하되, 문서 내용을 그대로 복사하지 말고 사용자의 상황에 맞게 해석하여 적용하세요.`;
+        }
+      } catch (pdfError) {
+        // PDF 로드 실패 시 무시 (선택적 기능)
+        // pdf-parse 라이브러리가 없거나 PDF 파일을 읽을 수 없는 경우
+        console.warn('PDF 내용 로드 실패 (무시됨):', pdfError instanceof Error ? pdfError.message : pdfError);
+      }
+    }
+  } catch (error) {
+    // PDF 설정 로드 실패 시 무시 (선택적 기능)
+    console.warn('PDF 설정 로드 실패 (무시됨):', error instanceof Error ? error.message : error);
+  }
 
   // 작성 가이드라인
   const writingGuidelinesSection = `
@@ -144,6 +180,7 @@ ${llmConfig.examples.bad_example.examples.map(ex => `- ${ex}`).join('\n')}`;
 ${principlesSection}
 ${contextSection}
 ${bracketLearningSection}
+${pdfSection}
 ${writingGuidelinesSection}
 ${sectionGuidelinesSection}
 ${goodExampleSection}
