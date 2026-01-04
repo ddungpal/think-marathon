@@ -2,6 +2,21 @@ import fs from 'fs/promises';
 import path from 'path';
 import { stat } from 'fs/promises';
 
+// pdf-parse 타입 선언 (선택적 의존성)
+// 타입 선언 파일(src/types/pdf-parse.d.ts)을 참조합니다
+type PDFParseFunction = (dataBuffer: Buffer, options?: any) => Promise<{
+  text: string;
+  numpages: number;
+  numrender: number;
+  info?: {
+    Title?: string;
+    Author?: string;
+    [key: string]: any;
+  };
+  metadata?: any;
+  version?: string;
+}>;
+
 /**
  * PDF 파일에서 텍스트를 추출합니다.
  * 
@@ -12,9 +27,9 @@ export async function extractTextFromPDF(filePath: string): Promise<string> {
   try {
     // pdf-parse 라이브러리를 사용하여 PDF 파싱
     // 동적 import를 사용하여 빌드 타임 에러 방지
-    let pdfParse;
+    let pdfParse: { default: PDFParseFunction };
     try {
-      pdfParse = await import('pdf-parse');
+      pdfParse = await import('pdf-parse') as { default: PDFParseFunction };
     } catch (importError) {
       console.warn('pdf-parse 라이브러리를 찾을 수 없습니다. PDF 기능을 사용하려면 npm install pdf-parse를 실행하세요.');
       throw new Error('PDF_PARSER_NOT_AVAILABLE');
@@ -56,9 +71,9 @@ export async function getPDFMetadata(filePath: string): Promise<{
   size: number;
 }> {
   try {
-    let pdfParse;
+    let pdfParse: { default: PDFParseFunction };
     try {
-      pdfParse = await import('pdf-parse');
+      pdfParse = await import('pdf-parse') as { default: PDFParseFunction };
     } catch (importError) {
       console.warn('pdf-parse 라이브러리를 찾을 수 없습니다.');
       throw new Error('PDF_PARSER_NOT_AVAILABLE');
