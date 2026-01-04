@@ -1,15 +1,36 @@
-import { ConfigData, CareerStage, IncomeBand, AssetBand, JobType } from '@/types/config';
+import { ConfigData } from '@/types/config';
 import { IncomeBracketLearningPointsData } from '@/types/learning-points';
+import { careerStages } from '@/data/config/career-stages';
+import { jobTypes } from '@/data/config/job-types';
+import { incomeBands } from '@/data/config/income-bands';
+import { assetBands } from '@/data/config/asset-bands';
 import fs from 'fs';
 import path from 'path';
 
 let configCache: ConfigData | null = null;
 let learningPointsCache: IncomeBracketLearningPointsData | null = null;
 
+// JSON 파일 로드 (learning points용)
 async function loadJSON<T>(filePath: string): Promise<T> {
-  const fullPath = path.join(process.cwd(), filePath);
-  const fileContents = fs.readFileSync(fullPath, 'utf-8');
-  return JSON.parse(fileContents) as T;
+  // 여러 경로 시도
+  const paths = [
+    path.join(process.cwd(), 'public', filePath),
+    path.join(process.cwd(), filePath),
+    path.join(process.cwd(), 'src', filePath),
+  ];
+  
+  for (const fullPath of paths) {
+    try {
+      if (fs.existsSync(fullPath)) {
+        const fileContents = fs.readFileSync(fullPath, 'utf-8');
+        return JSON.parse(fileContents) as T;
+      }
+    } catch {
+      continue;
+    }
+  }
+  
+  throw new Error(`Config file not found: ${filePath}`);
 }
 
 export async function loadConfig(): Promise<ConfigData> {
@@ -18,18 +39,12 @@ export async function loadConfig(): Promise<ConfigData> {
   }
 
   try {
-    const [careerStagesData, incomeBandsData, assetBandsData, jobTypesData] = await Promise.all([
-      loadJSON<{ career_stages: CareerStage[] }>('config/career-stages.json'),
-      loadJSON<{ income_bands: IncomeBand[] }>('config/income-bands.json'),
-      loadJSON<{ asset_bands: AssetBand[] }>('config/asset-bands.json'),
-      loadJSON<{ job_types: JobType[] }>('config/job-types.json'),
-    ]);
-
+    // TypeScript 파일에서 직접 import (빌드 시점에 번들에 포함됨)
     configCache = {
-      careerStages: careerStagesData.career_stages,
-      incomeBands: incomeBandsData.income_bands,
-      assetBands: assetBandsData.asset_bands,
-      jobTypes: jobTypesData.job_types,
+      careerStages,
+      incomeBands,
+      assetBands,
+      jobTypes,
     };
 
     return configCache;
@@ -52,13 +67,22 @@ export async function loadLearningPoints(): Promise<IncomeBracketLearningPointsD
   }
 
   try {
-    learningPointsCache = await loadJSON<IncomeBracketLearningPointsData>(
-      'config/income-bracket-learning-points.json'
-    );
+    // TypeScript 파일에서 직접 import (빌드 시점에 번들에 포함됨)
+    const { incomeBracketLearningPoints } = await import('@/data/config/income-bracket-learning-points');
+    learningPointsCache = incomeBracketLearningPoints;
     return learningPointsCache;
   } catch (error) {
     console.error('Failed to load learning points:', error);
-    throw new Error('Learning points loading failed');
+    // 폴백: JSON 파일 시도
+    try {
+      learningPointsCache = await loadJSON<IncomeBracketLearningPointsData>(
+        'config/income-bracket-learning-points.json'
+      );
+      return learningPointsCache;
+    } catch (jsonError) {
+      console.error('Failed to load learning points from JSON:', jsonError);
+      throw new Error('Learning points loading failed');
+    }
   }
 }
 

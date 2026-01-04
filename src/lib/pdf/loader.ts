@@ -4,8 +4,8 @@ import path from 'path';
 import { extractTextFromPDF, checkPDFExists } from './parser';
 import { PDFConfig, PDFContent } from '@/types/pdf-config';
 
-// Netlify 배포 환경을 고려하여 경로 처리
-// public 디렉토리의 파일은 빌드 출력에 포함됨
+// PDF Config는 TypeScript 파일에서 import (빌드 시점에 번들에 포함됨)
+// JSON 파일은 폴백으로만 사용
 function getPDFConfigPath(): string {
   const publicPath = path.join(process.cwd(), 'public', 'config', 'pdf-config.json');
   const originalPath = path.join(process.cwd(), 'config', 'pdf-config.json');
@@ -39,17 +39,26 @@ export async function loadPDFConfig(): Promise<PDFConfig> {
   }
 
   try {
-    const fileContent = await fs.readFile(PDF_CONFIG_PATH, 'utf-8');
-    pdfConfigCache = JSON.parse(fileContent);
-    return pdfConfigCache!;
-  } catch (error) {
-    // 설정 파일이 없으면 기본값 반환
-    console.warn('PDF 설정 파일을 찾을 수 없습니다. 기본값을 사용합니다.');
-    pdfConfigCache = {
-      enabled: false,
-      pdfs: [],
-    };
+    // TypeScript 파일에서 직접 import (빌드 시점에 번들에 포함됨)
+    const { pdfConfig } = await import('@/data/config/pdf-config');
+    pdfConfigCache = pdfConfig;
     return pdfConfigCache;
+  } catch (error) {
+    console.warn('Failed to load PDF config from TypeScript, trying JSON:', error);
+    // 폴백: JSON 파일 시도
+    try {
+      const fileContent = await fs.readFile(PDF_CONFIG_PATH, 'utf-8');
+      pdfConfigCache = JSON.parse(fileContent);
+      return pdfConfigCache!;
+    } catch (jsonError) {
+      // 설정 파일이 없으면 기본값 반환
+      console.warn('PDF 설정 파일을 찾을 수 없습니다. 기본값을 사용합니다.');
+      pdfConfigCache = {
+        enabled: false,
+        pdfs: [],
+      };
+      return pdfConfigCache;
+    }
   }
 }
 

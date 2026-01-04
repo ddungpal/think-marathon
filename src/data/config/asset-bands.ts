@@ -1,0 +1,10 @@
+import { AssetBand } from '@/types/config';
+
+export const assetBands: AssetBand[] = [
+  { id: "ASSET_01", label: "1억 이하", min: 0, max: 10000 },
+  { id: "ASSET_02", label: "1억~3억", min: 10001, max: 30000 },
+  { id: "ASSET_03", label: "3억~10억", min: 30001, max: 100000 },
+  { id: "ASSET_04", label: "10억~30억", min: 100001, max: 300000 },
+  { id: "ASSET_05", label: "30억 이상", min: 300001, max: null }
+];
+

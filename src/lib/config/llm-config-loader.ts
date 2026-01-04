@@ -38,11 +38,20 @@ export async function loadLLMConfig(): Promise<LLMPromptConfig> {
   }
 
   try {
-    llmConfigCache = await loadJSON<LLMPromptConfig>('config/llm-prompt-config.json');
+    // TypeScript 파일에서 직접 import (빌드 시점에 번들에 포함됨)
+    const { llmPromptConfig } = await import('@/data/config/llm-prompt-config');
+    llmConfigCache = llmPromptConfig;
     return llmConfigCache;
   } catch (error) {
     console.error('Failed to load LLM config:', error);
-    throw new Error('LLM config loading failed');
+    // 폴백: JSON 파일 시도
+    try {
+      llmConfigCache = await loadJSON<LLMPromptConfig>('config/llm-prompt-config.json');
+      return llmConfigCache;
+    } catch (jsonError) {
+      console.error('Failed to load LLM config from JSON:', jsonError);
+      throw new Error('LLM config loading failed');
+    }
   }
 }
 
