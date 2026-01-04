@@ -1,0 +1,7 @@
+{
+  "job_types": [
+    { "code": "EMPLOYEE", "label": "직장인" },
+    { "code": "FREELANCER", "label": "프리랜서/사업자" }
+  ]
+}
+

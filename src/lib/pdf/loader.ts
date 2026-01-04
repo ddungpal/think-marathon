@@ -1,9 +1,29 @@
 import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import { extractTextFromPDF, checkPDFExists } from './parser';
 import { PDFConfig, PDFContent } from '@/types/pdf-config';
 
-const PDF_CONFIG_PATH = path.join(process.cwd(), 'config', 'pdf-config.json');
+// Netlify 배포 환경을 고려하여 경로 처리
+// public 디렉토리의 파일은 빌드 출력에 포함됨
+function getPDFConfigPath(): string {
+  const publicPath = path.join(process.cwd(), 'public', 'config', 'pdf-config.json');
+  const originalPath = path.join(process.cwd(), 'config', 'pdf-config.json');
+  
+  // 파일 존재 여부 확인
+  try {
+    if (fsSync.existsSync(publicPath)) {
+      return publicPath;
+    } else if (fsSync.existsSync(originalPath)) {
+      return originalPath;
+    }
+  } catch {
+    // 에러 발생 시 public 경로 반환
+  }
+  return publicPath;
+}
+
+const PDF_CONFIG_PATH = getPDFConfigPath();
 const PDF_UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'pdfs');
 
 // PDF 설정 캐시
