@@ -4,20 +4,25 @@ import { DiagnosisResult } from '@/types/output';
 import { buildPrompt } from './prompt';
 import { validateResponse } from './validator';
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error('OPENAI_API_KEY is not set in environment variables');
+// OpenAI 클라이언트를 지연 초기화 (런타임에만 생성)
+function getOpenAIClient(): OpenAI {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY is not set in environment variables');
+  }
+  
+  return new OpenAI({
+    apiKey,
+    timeout: 30000, // 30초 타임아웃
+    maxRetries: 1, // 재시도 1회만
+  });
 }
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  timeout: 30000, // 30초 타임아웃
-  maxRetries: 1, // 재시도 1회만
-});
 
 export async function generateDiagnosis(
   context: NormalizedInput
 ): Promise<DiagnosisResult> {
   const prompt = buildPrompt(context);
+  const openai = getOpenAIClient(); // 런타임에 클라이언트 생성
 
   try {
     const response = await Promise.race([

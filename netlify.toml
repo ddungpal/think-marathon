@@ -9,3 +9,15 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
 
+# 프로덕션 환경 변수 설정
+# ⚠️ 보안 주의: 실제 API 키를 여기에 넣으면 Git에 커밋됩니다!
+# 
+# 권장 방법:
+# 1. Netlify 대시보드에서 설정 (가장 안전)
+# 2. Netlify CLI 사용: netlify env:set OPENAI_API_KEY "your-key"
+# 3. 아래 주석을 해제하고 실제 값을 넣은 후 커밋 (비추천)
+#
+[context.production.environment]
+  # OPENAI_API_KEY = "your-openai-api-key-here"
+  # NODE_ENV = "production"
+

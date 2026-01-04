@@ -64,7 +64,161 @@
 
 ---
 
-## 🔧 방법 2: 배포 시 설정 (일회성)
+## 🔧 방법 2: netlify.toml 파일에 설정
+
+`netlify.toml` 파일에 환경 변수를 직접 설정할 수 있습니다.
+
+### 1단계: netlify.toml 파일 확인
+
+프로젝트 루트에 `netlify.toml` 파일이 있는지 확인하세요.
+
+### 2단계: 환경 변수 섹션 추가
+
+`netlify.toml` 파일에 다음 섹션을 추가합니다:
+
+```toml
+[context.production.environment]
+  OPENAI_API_KEY = "your-openai-api-key-here"
+  NODE_ENV = "production"
+```
+
+**전체 예시:**
+```toml
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+[context.production.environment]
+  OPENAI_API_KEY = "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  NODE_ENV = "production"
+```
+
+### 3단계: 파일 커밋 및 푸시
+
+```bash
+git add netlify.toml
+git commit -m "Add environment variables to netlify.toml"
+git push
+```
+
+### ⚠️ 보안 주의사항
+
+**중요**: `netlify.toml` 파일은 Git에 커밋되므로, 실제 API 키를 직접 넣으면 보안 위험이 있습니다.
+
+**권장 방법:**
+1. **대시보드 사용 (권장)**: 민감한 정보는 Netlify 대시보드에서만 설정
+2. **환경 변수 분리**: `netlify.toml`에는 비민감한 변수만 설정
+3. **Git ignore**: `.env` 파일은 `.gitignore`에 포함되어 있어야 함
+
+**대안:**
+- `netlify.toml`에는 주석으로만 표시하고, 실제 값은 Netlify 대시보드에서 설정
+- 또는 Netlify CLI를 사용하여 환경 변수 설정 (아래 방법 3 참고)
+
+---
+
+## 🔧 방법 3: Netlify CLI를 사용한 설정 (명령어)
+
+Netlify CLI를 사용하면 명령어로 환경 변수를 설정할 수 있습니다.
+
+### 1단계: Netlify CLI 설치
+
+```bash
+npm install -g netlify-cli
+```
+
+또는 프로젝트에 로컬 설치:
+
+```bash
+npm install --save-dev netlify-cli
+```
+
+### 2단계: Netlify 로그인
+
+```bash
+netlify login
+```
+
+브라우저가 열리면 Netlify 계정으로 로그인하세요.
+
+### 3단계: 사이트 연결 (처음만)
+
+프로젝트 디렉토리에서:
+
+```bash
+netlify init
+```
+
+또는 기존 사이트에 연결:
+
+```bash
+netlify link
+```
+
+### 4단계: 환경 변수 설정
+
+**프로덕션 환경 변수 설정:**
+```bash
+netlify env:set OPENAI_API_KEY "sk-proj-your-actual-api-key-here" --context production
+```
+
+**모든 환경에 설정:**
+```bash
+netlify env:set OPENAI_API_KEY "sk-proj-your-actual-api-key-here"
+```
+
+**다른 환경 변수도 설정:**
+```bash
+netlify env:set NODE_ENV "production" --context production
+```
+
+### 5단계: 환경 변수 확인
+
+설정된 환경 변수 목록 확인:
+
+```bash
+netlify env:list
+```
+
+특정 환경 변수 확인:
+
+```bash
+netlify env:get OPENAI_API_KEY
+```
+
+### 6단계: 환경 변수 삭제
+
+```bash
+netlify env:unset OPENAI_API_KEY --context production
+```
+
+### CLI 명령어 요약
+
+| 명령어 | 설명 |
+|--------|------|
+| `netlify env:set KEY "value"` | 환경 변수 설정 (모든 환경) |
+| `netlify env:set KEY "value" --context production` | 프로덕션 환경에만 설정 |
+| `netlify env:set KEY "value" --context deploy-preview` | Deploy preview에만 설정 |
+| `netlify env:list` | 모든 환경 변수 목록 확인 |
+| `netlify env:get KEY` | 특정 환경 변수 값 확인 |
+| `netlify env:unset KEY` | 환경 변수 삭제 |
+
+### 장점
+
+- ✅ 명령어로 빠르게 설정 가능
+- ✅ 스크립트로 자동화 가능
+- ✅ CI/CD 파이프라인에 통합 가능
+- ✅ Git에 커밋하지 않아도 됨 (보안)
+
+---
+
+## 🔧 방법 4: 배포 시 설정 (일회성)
 
 배포 설정 화면에서도 환경 변수를 추가할 수 있습니다:
 
