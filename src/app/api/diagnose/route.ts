@@ -130,20 +130,39 @@ export async function POST(request: NextRequest) {
     // 환경 변수 관련 에러인 경우 더 자세한 정보 제공
     const isEnvError = appError.message.includes('OPENAI_API_KEY');
     
+    // OpenAI API 에러 체크
+    const isOpenAIError = error instanceof Error && (
+      error.message.includes('OpenAI') ||
+      error.message.includes('API key') ||
+      error.message.includes('authentication') ||
+      error.message.includes('401') ||
+      error.message.includes('403')
+    );
+    
+    // 원본 에러 정보를 로깅 (디버깅용)
+    const originalError = error instanceof Error ? {
+      message: error.message,
+      name: error.name,
+      stack: error.stack?.substring(0, 500), // 스택 추적의 처음 500자만
+    } : error;
+    
     logger.error('Diagnosis failed', {
       error: appError.message,
       code: appError.code,
       responseTime: Date.now() - startTime,
       isEnvError,
+      isOpenAIError,
+      originalError,
       // 환경 변수 디버깅 정보 (프로덕션에서도 로깅)
       envCheck: {
         hasKey: !!process.env.OPENAI_API_KEY,
         keyLength: process.env.OPENAI_API_KEY?.length || 0,
+        keyPrefix: process.env.OPENAI_API_KEY?.substring(0, 7) || 'N/A', // sk-proj만 표시
         nodeEnv: process.env.NODE_ENV,
       },
     });
 
-    // 클라이언트 에러
+    // 클라이언트 에러 (400-499)
     if (appError.statusCode >= 400 && appError.statusCode < 500) {
       return NextResponse.json<DiagnoseResponse>(
         {
@@ -157,16 +176,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 서버 에러 - 환경 변수 에러인 경우 더 명확한 메시지
-    const errorMessage = isEnvError
-      ? 'API 키가 설정되지 않았습니다. Netlify 환경 변수를 확인하고 재배포해주세요.'
-      : 'Internal server error';
+    // 서버 에러 (500+) - 사용자 친화적인 메시지
+    let errorMessage = 'Internal server error';
+    let errorCode = 'INTERNAL_ERROR';
+    
+    if (isEnvError) {
+      errorMessage = 'API 키가 설정되지 않았습니다. Netlify 환경 변수를 확인하고 재배포해주세요.';
+      errorCode = 'MISSING_API_KEY';
+    } else if (isOpenAIError) {
+      errorMessage = 'OpenAI API 호출에 실패했습니다. API 키를 확인해주세요.';
+      errorCode = 'OPENAI_API_ERROR';
+    }
 
     return NextResponse.json<DiagnoseResponse>(
       {
         success: false,
         error: {
-          code: 'INTERNAL_ERROR',
+          code: errorCode,
           message: errorMessage,
         },
       },

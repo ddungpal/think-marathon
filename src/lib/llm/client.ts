@@ -6,11 +6,8 @@ import { validateResponse } from './validator';
 
 // OpenAI 클라이언트를 지연 초기화 (런타임에만 생성)
 function getOpenAIClient(): OpenAI {
-  // Netlify에서 환경 변수를 제대로 읽기 위해 여러 방법 시도
-  const apiKey = 
-    process.env.OPENAI_API_KEY || 
-    process.env.NEXT_PUBLIC_OPENAI_API_KEY || // 클라이언트 사이드 (비추천이지만 백업용)
-    (typeof window === 'undefined' ? undefined : undefined); // 서버 사이드에서만
+  // 환경 변수에서 API 키 가져오기
+  const apiKey = process.env.OPENAI_API_KEY;
   
   if (!apiKey) {
     // 디버깅 정보 추가
@@ -23,13 +20,20 @@ function getOpenAIClient(): OpenAI {
   }
   
   // API 키가 설정되었는지 확인 (빈 문자열 체크)
-  if (apiKey.trim() === '') {
+  const trimmedKey = apiKey.trim();
+  if (trimmedKey === '') {
     console.error('OPENAI_API_KEY is set but empty');
     throw new Error('OPENAI_API_KEY is empty. Please set a valid API key in Netlify environment variables.');
   }
   
+  // API 키 형식 기본 검증 (sk- 또는 sk-proj-로 시작)
+  if (!trimmedKey.startsWith('sk-')) {
+    console.error('OPENAI_API_KEY format is invalid (should start with sk-)');
+    throw new Error('OPENAI_API_KEY format is invalid. Please check your API key in Netlify environment variables.');
+  }
+  
   return new OpenAI({
-    apiKey,
+    apiKey: trimmedKey,
     timeout: 30000, // 30초 타임아웃
     maxRetries: 1, // 재시도 1회만
   });
@@ -77,7 +81,26 @@ export async function generateDiagnosis(
 
     return validation.data;
   } catch (error) {
-    console.error('LLM call failed:', error);
+    // OpenAI API 에러를 더 자세히 로깅
+    if (error instanceof Error) {
+      // OpenAI API 에러인 경우
+      if ('status' in error || 'code' in error) {
+        console.error('OpenAI API Error:', {
+          message: error.message,
+          name: error.name,
+          // @ts-ignore - OpenAI 에러 객체
+          status: error.status,
+          // @ts-ignore
+          code: error.code,
+          // @ts-ignore
+          type: error.type,
+        });
+      } else {
+        console.error('LLM call failed:', error.message, error.stack);
+      }
+    } else {
+      console.error('LLM call failed (unknown error):', error);
+    }
     throw error;
   }
 }
