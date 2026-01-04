@@ -6,9 +6,26 @@ import { validateResponse } from './validator';
 
 // OpenAI 클라이언트를 지연 초기화 (런타임에만 생성)
 function getOpenAIClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
+  // Netlify에서 환경 변수를 제대로 읽기 위해 여러 방법 시도
+  const apiKey = 
+    process.env.OPENAI_API_KEY || 
+    process.env.NEXT_PUBLIC_OPENAI_API_KEY || // 클라이언트 사이드 (비추천이지만 백업용)
+    (typeof window === 'undefined' ? undefined : undefined); // 서버 사이드에서만
+  
   if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is not set in environment variables');
+    // 디버깅 정보 추가
+    const envKeys = Object.keys(process.env).filter(key => 
+      key.includes('OPENAI') || key.includes('API')
+    );
+    console.error('OPENAI_API_KEY is not set. Available env keys:', envKeys);
+    console.error('NODE_ENV:', process.env.NODE_ENV);
+    throw new Error('OPENAI_API_KEY is not set in environment variables. Please check Netlify environment variables and redeploy.');
+  }
+  
+  // API 키가 설정되었는지 확인 (빈 문자열 체크)
+  if (apiKey.trim() === '') {
+    console.error('OPENAI_API_KEY is set but empty');
+    throw new Error('OPENAI_API_KEY is empty. Please set a valid API key in Netlify environment variables.');
   }
   
   return new OpenAI({

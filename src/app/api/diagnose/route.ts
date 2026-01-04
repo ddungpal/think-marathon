@@ -127,10 +127,20 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const appError = handleError(error);
 
+    // 환경 변수 관련 에러인 경우 더 자세한 정보 제공
+    const isEnvError = appError.message.includes('OPENAI_API_KEY');
+    
     logger.error('Diagnosis failed', {
       error: appError.message,
       code: appError.code,
       responseTime: Date.now() - startTime,
+      isEnvError,
+      // 환경 변수 디버깅 정보 (프로덕션에서도 로깅)
+      envCheck: {
+        hasKey: !!process.env.OPENAI_API_KEY,
+        keyLength: process.env.OPENAI_API_KEY?.length || 0,
+        nodeEnv: process.env.NODE_ENV,
+      },
     });
 
     // 클라이언트 에러
@@ -147,13 +157,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 서버 에러
+    // 서버 에러 - 환경 변수 에러인 경우 더 명확한 메시지
+    const errorMessage = isEnvError
+      ? 'API 키가 설정되지 않았습니다. Netlify 환경 변수를 확인하고 재배포해주세요.'
+      : 'Internal server error';
+
     return NextResponse.json<DiagnoseResponse>(
       {
         success: false,
         error: {
           code: 'INTERNAL_ERROR',
-          message: 'Internal server error',
+          message: errorMessage,
         },
       },
       { status: 500 }
