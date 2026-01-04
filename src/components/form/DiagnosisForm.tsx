@@ -17,17 +17,8 @@ import { DiagnoseRequest } from '@/types/api';
 
 // 숫자 필드를 위한 커스텀 스키마 (간단하고 확실한 방법)
 const numberSchema = (fieldName: string, min: number = 0, max?: number): ZodTypeAny => {
-  const baseNumberSchema = z.number({
-    required_error: `${fieldName}을(를) 입력해주세요.`,
-    invalid_type_error: `${fieldName}은(는) 숫자여야 합니다.`,
-  }).min(min, `${fieldName}은(는) ${min} 이상이어야 합니다.`);
-
-  // max 값이 있으면 추가
-  const numberSchemaWithMax = max !== undefined
-    ? baseNumberSchema.max(max, `${fieldName}은(는) ${max} 이하여야 합니다.`)
-    : baseNumberSchema;
-
-  return z.preprocess(
+  // preprocess로 문자열을 숫자로 변환
+  const preprocessedSchema = z.preprocess(
     (val) => {
       // 빈 값 처리
       if (val === '' || val === null || val === undefined) {
@@ -41,8 +32,27 @@ const numberSchema = (fieldName: string, min: number = 0, max?: number): ZodType
       // 이미 숫자면 그대로 반환
       return typeof val === 'number' ? val : undefined;
     },
-    numberSchemaWithMax
+    z.number({
+      required_error: `${fieldName}을(를) 입력해주세요.`,
+      invalid_type_error: `${fieldName}은(는) 숫자여야 합니다.`,
+    })
   );
+
+  // min과 max 검증을 refine으로 추가 (타입 안정성 확보)
+  let schema: ZodTypeAny = preprocessedSchema.refine(
+    (val) => val >= min,
+    { message: `${fieldName}은(는) ${min} 이상이어야 합니다.` }
+  );
+
+  // max 값이 있으면 추가 refine
+  if (max !== undefined) {
+    schema = schema.refine(
+      (val) => val <= max,
+      { message: `${fieldName}은(는) ${max} 이하여야 합니다.` }
+    );
+  }
+
+  return schema;
 };
 
 const diagnosisSchema = z.object({
