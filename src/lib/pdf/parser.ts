@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { stat } from 'fs/promises';
 
 /**
  * PDF 파일에서 텍스트를 추출합니다.
@@ -65,7 +66,7 @@ export async function getPDFMetadata(filePath: string): Promise<{
 
     const dataBuffer = await fs.readFile(filePath);
     const data = await pdfParse.default(dataBuffer);
-    const stats = await fs.stat(filePath);
+    const stats = await stat(filePath);
     
     return {
       title: data.info?.Title,
