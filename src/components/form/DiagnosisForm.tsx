@@ -14,6 +14,7 @@ import { IncomeInput } from './IncomeInput';
 import { AssetInput } from './AssetInput';
 import { callDiagnoseAPI } from '@/lib/api/diagnose';
 import { DiagnoseRequest } from '@/types/api';
+import { saveDiagnosisInput, updateDiagnosisResult } from '@/lib/firebase/diagnosis';
 
 // 숫자 필드를 위한 커스텀 스키마 (간단하고 확실한 방법)
 const numberSchema = (fieldName: string, min: number = 0, max?: number): ZodTypeAny => {
@@ -96,10 +97,32 @@ export const DiagnosisForm: React.FC = () => {
     setError(null);
 
     try {
+      // 1. 진단 입력 데이터를 Firestore에 저장 (결과는 나중에 업데이트)
+      let diagnosisDocId: string | null = null;
+      try {
+        diagnosisDocId = await saveDiagnosisInput(data);
+        console.log('진단 입력 데이터 저장 완료:', diagnosisDocId);
+      } catch (firebaseError) {
+        // Firebase 저장 실패해도 진단은 계속 진행
+        console.warn('Firebase 저장 실패 (진단 계속 진행):', firebaseError);
+      }
+
+      // 2. 진단 API 호출
       const response = await callDiagnoseAPI(data);
       
       if (response.success && response.data) {
-        // 결과를 sessionStorage에 저장하고 결과 페이지로 이동
+        // 3. 진단 결과도 Firestore에 업데이트 (문서 ID가 있는 경우)
+        if (diagnosisDocId) {
+          try {
+            await updateDiagnosisResult(diagnosisDocId, response.data);
+            console.log('진단 결과 업데이트 완료:', diagnosisDocId);
+          } catch (firebaseError) {
+            // 결과 업데이트 실패해도 계속 진행
+            console.warn('Firebase 결과 업데이트 실패 (계속 진행):', firebaseError);
+          }
+        }
+
+        // 4. 결과를 sessionStorage에 저장하고 결과 페이지로 이동
         sessionStorage.setItem('diagnosisResult', JSON.stringify(response.data));
         sessionStorage.setItem('diagnosisInput', JSON.stringify(data));
         router.push('/result');
