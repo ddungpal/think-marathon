@@ -41,7 +41,27 @@ const getFirebaseConfig = (): FirebaseConfig => {
 
   for (const key of requiredKeys) {
     if (!config[key]) {
-      throw new Error(`Firebase ${key} is not set. Please check your .env.local file.`);
+      const envKey = `NEXT_PUBLIC_FIREBASE_${key.toUpperCase()}`;
+      const isProduction = process.env.NODE_ENV === 'production';
+      
+      let errorMessage = `Firebase ${key} is not set. `;
+      
+      if (isProduction) {
+        errorMessage += `Please set ${envKey} in Netlify environment variables (Site settings → Environment variables) and redeploy.`;
+      } else {
+        errorMessage += `Please check your .env.local file and ensure ${envKey} is set.`;
+      }
+      
+      // 디버깅 정보 추가
+      console.error('Firebase config error:', {
+        key,
+        envKey,
+        value: config[key],
+        nodeEnv: process.env.NODE_ENV,
+        availableEnvKeys: Object.keys(process.env).filter(k => k.includes('FIREBASE')),
+      });
+      
+      throw new Error(errorMessage);
     }
   }
 
