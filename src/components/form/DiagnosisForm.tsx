@@ -125,6 +125,9 @@ export const DiagnosisForm: React.FC = () => {
         // 4. 결과를 sessionStorage에 저장하고 결과 페이지로 이동
         sessionStorage.setItem('diagnosisResult', JSON.stringify(response.data));
         sessionStorage.setItem('diagnosisInput', JSON.stringify(data));
+        if (response.stage) {
+          sessionStorage.setItem('diagnosisStage', JSON.stringify(response.stage));
+        }
         router.push('/result');
       } else {
         setError(response.error?.message || '진단에 실패했습니다.');
@@ -137,8 +140,8 @@ export const DiagnosisForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl mx-auto">
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <div className="space-y-6">
         <NameInput register={register} error={errors.name} />
         <AgeInput register={register} error={errors.age} />
         <JobTypeSelect register={register} error={errors.job_type} />
@@ -148,13 +151,13 @@ export const DiagnosisForm: React.FC = () => {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <div className="bg-[#FEF3F2] border border-[#F04452] text-[#F04452] px-5 py-4 rounded-2xl text-sm">
           {error}
         </div>
       )}
 
-      <div className="flex justify-center">
-        <Button type="submit" isLoading={isLoading} size="large" className="w-full sm:w-auto min-w-[200px]">
+      <div className="pt-4">
+        <Button type="submit" isLoading={isLoading} size="large" className="w-full">
           진단 시작하기
         </Button>
       </div>

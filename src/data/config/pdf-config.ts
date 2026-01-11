@@ -1,15 +1,15 @@
 import { PDFConfig } from '@/types/pdf-config';
 
 export const pdfConfig: PDFConfig = {
-  enabled: false,
+  enabled: true,
   pdfs: [
     {
       id: "pdf-1",
-      title: "예시 PDF 문서",
-      filename: "example.pdf",
-      enabled: false,
-      maxLength: 5000,
-      description: "이 PDF는 예시입니다. 실제 PDF 파일을 업로드하고 설정을 활성화하세요."
+      title: "학습자본의 정의 1차",
+      filename: "학습자본의 정의 1차.pdf",
+      enabled: true,
+      maxLength: 20000,
+      description: "학습자본의 정의와 관련된 내용"
     }
   ]
 };

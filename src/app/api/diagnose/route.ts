@@ -3,6 +3,7 @@ import { loadConfig, getConfig, loadLearningPoints } from '@/lib/config/loader';
 import { loadLLMConfig } from '@/lib/config/llm-config-loader';
 import { loadPDFConfig } from '@/lib/pdf/loader';
 import { normalizeInput } from '@/lib/config/mapper';
+import { mapIncomeToStageByValue } from '@/lib/config/stage-mapper';
 import { validateInput } from '@/lib/validation/input-validator';
 import { generateCacheKey } from '@/lib/utils/cache-key';
 import { memoryCache } from '@/lib/cache/memory';
@@ -113,11 +114,16 @@ export async function POST(request: NextRequest) {
     errorStage = 'input_normalization';
     logger.info('Normalizing input');
     const normalized = normalizeInput(body, config);
+    
+    // 6단계 정보 계산 (실제 소득값 사용)
+    const stage = mapIncomeToStageByValue(body.monthly_income);
+    
     logger.info('Input normalized', {
       jobType: normalized.job_type_label,
       careerStage: normalized.career_stage.label,
       incomeBand: normalized.income_band.label,
       assetBand: normalized.asset_band.label,
+      stage: stage.label,
     });
 
     // 캐시 키 생성
@@ -134,6 +140,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json<DiagnoseResponse>({
         success: true,
         data: cachedResult,
+        stage: stage || undefined,
         cached: true,
       });
     }
@@ -164,6 +171,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json<DiagnoseResponse>({
         success: true,
         data: result,
+        stage: stage || undefined,
         cached: false,
       });
     } finally {

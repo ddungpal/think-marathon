@@ -51,7 +51,7 @@ export async function generateDiagnosis(
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.2,
-        max_tokens: 2000, // 각 섹션 3-7문장 × 3개 섹션 + JSON 형식 고려
+        max_tokens: 3000, // 새로운 필드 추가로 토큰 수 증가 (각 섹션 3-7문장 × 7개 섹션 + JSON 형식 고려)
         response_format: { type: 'json_object' },
       }),
       new Promise<never>((_, reject) =>
