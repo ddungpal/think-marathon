@@ -25,50 +25,21 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({ userName = '님' }) =>
     ],
   };
 
-  const pageStyle: React.CSSProperties = {
-    backgroundColor: theme.colors.background,
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: theme.spacing.container.padding,
-  };
-
-  const containerStyle: React.CSSProperties = {
-    maxWidth: theme.spacing.container.maxWidth,
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-  };
-
-  const titleStyle: React.CSSProperties = {
-    fontFamily: theme.fonts.family,
-    fontSize: theme.fonts.title.size,
-    fontWeight: theme.fonts.title.weight,
-    lineHeight: theme.fonts.title.lineHeight,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.title.marginBottom,
-  };
-
-  const bodyTextStyle: React.CSSProperties = {
-    fontFamily: theme.fonts.family,
-    fontSize: theme.fonts.body.size,
-    fontWeight: theme.fonts.body.weight,
-    lineHeight: theme.fonts.body.lineHeight,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing.body.marginBottom,
-  };
-
   return (
-    <div style={pageStyle}>
-      <div style={containerStyle}>
+    <div 
+      className="min-h-screen bg-[#F7F8FA] flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16"
+      style={{ fontFamily: theme.fonts.family }}
+    >
+      <div className="max-w-[600px] w-full flex flex-col items-center text-center">
         <ThinkingIllustration />
-        <h1 style={titleStyle}>{message.title}</h1>
+        <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#191F28] mb-2 sm:mb-3 md:mb-4 leading-[1.4]">
+          {message.title}
+        </h1>
         {message.body.map((line, index) => (
-          <p key={index} style={bodyTextStyle}>
+          <p 
+            key={index} 
+            className="text-xs sm:text-sm md:text-base text-[#4E5968] mb-1 sm:mb-2 leading-[1.6]"
+          >
             {line}
           </p>
         ))}
