@@ -13,6 +13,7 @@ const colorClasses = {
   blue: {
     bg: 'bg-white',
     border: 'border-[#E5E8EB]',
+    accent: 'border-l-4 border-l-[#3182F6]',
     icon: 'bg-[#E8F4FD] text-[#3182F6]',
     text: 'text-[#191F28]',
     title: 'text-[#191F28]',
@@ -20,6 +21,7 @@ const colorClasses = {
   indigo: {
     bg: 'bg-white',
     border: 'border-[#E5E8EB]',
+    accent: 'border-l-4 border-l-[#6366F1]',
     icon: 'bg-[#E8EBF5] text-[#6366F1]',
     text: 'text-[#191F28]',
     title: 'text-[#191F28]',
@@ -27,6 +29,7 @@ const colorClasses = {
   amber: {
     bg: 'bg-white',
     border: 'border-[#E5E8EB]',
+    accent: 'border-l-4 border-l-[#F59E0B]',
     icon: 'bg-[#FEF3C7] text-[#F59E0B]',
     text: 'text-[#191F28]',
     title: 'text-[#191F28]',
@@ -34,6 +37,7 @@ const colorClasses = {
   green: {
     bg: 'bg-white',
     border: 'border-[#E5E8EB]',
+    accent: 'border-l-4 border-l-[#10B981]',
     icon: 'bg-[#D1FAE5] text-[#10B981]',
     text: 'text-[#191F28]',
     title: 'text-[#191F28]',
@@ -41,6 +45,7 @@ const colorClasses = {
   purple: {
     bg: 'bg-white',
     border: 'border-[#E5E8EB]',
+    accent: 'border-l-4 border-l-[#8B5CF6]',
     icon: 'bg-[#F3E8FF] text-[#8B5CF6]',
     text: 'text-[#191F28]',
     title: 'text-[#191F28]',
@@ -48,6 +53,7 @@ const colorClasses = {
   pink: {
     bg: 'bg-white',
     border: 'border-[#E5E8EB]',
+    accent: 'border-l-4 border-l-[#EC4899]',
     icon: 'bg-[#FCE7F3] text-[#EC4899]',
     text: 'text-[#191F28]',
     title: 'text-[#191F28]',
@@ -55,6 +61,7 @@ const colorClasses = {
   teal: {
     bg: 'bg-white',
     border: 'border-[#E5E8EB]',
+    accent: 'border-l-4 border-l-[#14B8A6]',
     icon: 'bg-[#CCFBF1] text-[#14B8A6]',
     text: 'text-[#191F28]',
     title: 'text-[#191F28]',
@@ -62,6 +69,7 @@ const colorClasses = {
   red: {
     bg: 'bg-white',
     border: 'border-[#E5E8EB]',
+    accent: 'border-l-4 border-l-[#F04452]',
     icon: 'bg-[#FEE2E2] text-[#F04452]',
     text: 'text-[#191F28]',
     title: 'text-[#191F28]',
@@ -80,21 +88,45 @@ export const ResultSection: React.FC<ResultSectionProps> = ({
   const paragraphs = content.split('\n\n').filter(p => p.trim());
   
   return (
-    <div className={`${colors.bg} rounded-2xl p-8 border ${colors.border}`}>
-      <div className="flex items-start gap-4 mb-6">
-        {icon && (
-          <div className={`${colors.icon} w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0`}>
-            {icon}
-          </div>
-        )}
-        <h3 className={`text-2xl font-bold ${colors.title} flex-1 leading-tight`}>
+    <div className={`
+      ${colors.bg} 
+      ${colors.border} 
+      ${colors.accent}
+      rounded-2xl 
+      border 
+      shadow-sm
+      hover:shadow-md
+      transition-shadow
+      duration-200
+      p-6
+      md:p-8
+    `}>
+      <div className="mb-5">
+        <h3 className={`
+          text-lg 
+          md:text-xl 
+          font-bold 
+          ${colors.title} 
+          leading-tight
+          tracking-tight
+        `}>
           {title}
         </h3>
       </div>
       
-      <div className={`space-y-4 ${colors.text} leading-relaxed`}>
+      <div className={`space-y-3.5 ${colors.text}`}>
         {paragraphs.map((paragraph, index) => (
-          <p key={index} className="text-base text-[#4E5968]">
+          <p 
+            key={index} 
+            className="
+              text-sm 
+              md:text-base
+              text-[#4E5968] 
+              leading-[1.7]
+              font-normal
+              tracking-normal
+            "
+          >
             {paragraph.trim()}
           </p>
         ))}

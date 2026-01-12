@@ -11,10 +11,10 @@ export default function Home() {
               생각 마라톤
             </h1>
             <p className="text-xl md:text-2xl text-[#4E5968] mb-4 font-medium">
-              사전 질문 기반 진단 시스템
+              당신의 고민을 깊게 생각하는 시간
             </p>
             <p className="text-base text-[#8B95A1] max-w-xl mx-auto leading-relaxed">
-              당신의 직업, 커리어, 소득, 자산을 기반으로 사고 패턴 중심의 구조화된 진단 결과를 제공합니다.
+              자신의 고민에 대해 깊게 생각하고 해결책을 가져갈 수 있는 생각하는 시간을 갖게 해드립니다.
             </p>
           </div>
 
@@ -25,7 +25,7 @@ export default function Home() {
 
           {/* Info Section */}
           <div className="mt-10 text-center text-sm text-[#8B95A1]">
-            <p>모든 정보는 진단 목적으로만 사용되며 저장되지 않습니다.</p>
+            <p>생각하는 시간을 가질 수 있도록 도와드립니다.</p>
           </div>
         </div>
       </div>

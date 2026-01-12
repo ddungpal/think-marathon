@@ -30,11 +30,11 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
   return (
     <main className="min-h-screen bg-[#F7F8FA]">
       {/* Hero Section with Stage Badge */}
-      <div className="bg-white pt-16 pb-20">
+      <div className="bg-white pt-20 pb-24 border-b border-[#E5E8EB]">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-[#191F28] mb-12">
-              {input.name}님의 진단 결과
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-2xl md:text-3xl font-bold text-[#191F28] mb-14 tracking-tight leading-tight">
+              {input.name}님의 생각 결과
             </h1>
             {stage && <StageGauge stage={stage} />}
           </div>
@@ -42,10 +42,10 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto">
           {/* Result Sections - 요청한 항목만 표시 */}
-          <div className="space-y-6">
+          <div className="space-y-5 md:space-y-6">
             {result.frequent_thoughts && (
               <ResultSection
                 title="내가 자주 하는 생각"
@@ -87,18 +87,18 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
             )}
           </div>
 
-          {/* Share Section */}
-          <div className="mt-16 pt-12 border-t border-[#E5E8EB]">
+          {/* Share Section - Hidden for now */}
+          {/* <div className="mt-16 pt-12 border-t border-[#E5E8EB]">
             <ShareButtons input={input} stage={stage} />
-          </div>
+          </div> */}
 
           {/* Restart Button */}
-          <div className="mt-10">
+          <div className="mt-16 pt-8 border-t border-[#E5E8EB]">
             <Button 
               onClick={handleRestart} 
               variant="secondary" 
               size="large"
-              className="w-full"
+              className="w-full max-w-md mx-auto block"
             >
               다시 진단하기
             </Button>

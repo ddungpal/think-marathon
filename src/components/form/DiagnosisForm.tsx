@@ -92,11 +92,26 @@ export const DiagnosisForm: React.FC = () => {
     mode: 'onChange', // 실시간 검증
   });
 
+  // Check for errors from previous navigation
+  React.useEffect(() => {
+    const diagnosisError = sessionStorage.getItem('diagnosisError');
+    if (diagnosisError) {
+      setError(diagnosisError);
+      sessionStorage.removeItem('diagnosisError');
+    }
+  }, []);
+
   const onSubmit = async (data: DiagnoseRequest) => {
     setIsLoading(true);
     setError(null);
 
     try {
+      // 입력 데이터를 sessionStorage에 저장 (로딩 페이지에서 사용)
+      sessionStorage.setItem('diagnosisInput', JSON.stringify(data));
+      
+      // 로딩 페이지로 이동
+      router.push('/loading');
+
       // 1. 진단 입력 데이터를 Firestore에 저장 (결과는 나중에 업데이트)
       let diagnosisDocId: string | null = null;
       try {
@@ -122,21 +137,26 @@ export const DiagnosisForm: React.FC = () => {
           }
         }
 
-        // 4. 결과를 sessionStorage에 저장하고 결과 페이지로 이동
+        // 4. 결과를 sessionStorage에 저장 (로딩 페이지에서 감지하여 결과 페이지로 이동)
         sessionStorage.setItem('diagnosisResult', JSON.stringify(response.data));
-        sessionStorage.setItem('diagnosisInput', JSON.stringify(data));
         if (response.stage) {
           sessionStorage.setItem('diagnosisStage', JSON.stringify(response.stage));
         }
-        router.push('/result');
       } else {
-        setError(response.error?.message || '진단에 실패했습니다.');
+        // 에러 발생 시 sessionStorage에 저장하고 메인 페이지로 리다이렉트
+        sessionStorage.removeItem('diagnosisInput');
+        sessionStorage.setItem('diagnosisError', response.error?.message || '진단에 실패했습니다.');
+        router.push('/');
+        setIsLoading(false);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
-    } finally {
+      // 에러 발생 시 sessionStorage에 저장하고 메인 페이지로 리다이렉트
+      sessionStorage.removeItem('diagnosisInput');
+      sessionStorage.setItem('diagnosisError', err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
+      router.push('/');
       setIsLoading(false);
     }
+    // Note: 성공 시 setIsLoading(false)는 호출하지 않음 (로딩 페이지로 이동했으므로)
   };
 
   return (

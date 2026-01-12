@@ -44,7 +44,7 @@ export default function ResultPage() {
       <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">결과를 불러오는 중...</p>
+          <p className="text-gray-600">생각 결과를 불러오는 중...</p>
         </div>
       </main>
     );
