@@ -25,6 +25,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             w-full px-4 py-4 border rounded-2xl text-base text-[#191F28] bg-white
             focus:outline-none focus:bg-[#F9FAFB] transition-colors duration-200
             ${error ? 'border-[#F04452]' : 'border-[#E5E8EB]'}
+            appearance-none
             ${className}
           `}
           aria-invalid={error ? 'true' : 'false'}

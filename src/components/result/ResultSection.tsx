@@ -5,6 +5,7 @@ import React from 'react';
 interface ResultSectionProps {
   title: string;
   content: string;
+  emoji?: string;
   icon?: string;
   color?: 'blue' | 'indigo' | 'amber' | 'green' | 'purple' | 'pink' | 'teal' | 'red';
 }
@@ -79,6 +80,7 @@ const colorClasses = {
 export const ResultSection: React.FC<ResultSectionProps> = ({ 
   title, 
   content, 
+  emoji,
   icon,
   color = 'blue'
 }) => {
@@ -103,14 +105,22 @@ export const ResultSection: React.FC<ResultSectionProps> = ({
     `}>
       <div className="mb-5">
         <h3 className={`
-          text-lg 
+          text-base
+          sm:text-lg 
           md:text-xl 
           font-bold 
           ${colors.title} 
           leading-tight
           tracking-tight
+          whitespace-nowrap
+          overflow-hidden
+          text-ellipsis
+          flex
+          items-center
+          gap-2
         `}>
-          {title}
+          {emoji && <span className="text-xl md:text-2xl flex-shrink-0">{emoji}</span>}
+          <span>{title}</span>
         </h3>
       </div>
       

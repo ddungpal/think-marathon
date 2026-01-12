@@ -37,7 +37,7 @@ export const StageGauge: React.FC<StageGaugeProps> = ({ stage }) => {
         >
           {stage.type}
         </div>
-        <p className="text-[#191F28] text-lg font-semibold mb-2">
+        <p className="text-[#191F28] text-sm sm:text-base md:text-lg font-semibold mb-2 whitespace-nowrap overflow-hidden text-ellipsis">
           총 {totalStages}단계 중 당신의 레벨은 <span className="font-bold" style={{ color: colors.primary }}>{currentLevel}단계</span>입니다
         </p>
         <p className="text-[#8B95A1] text-base">{stage.description}</p>

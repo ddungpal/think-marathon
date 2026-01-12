@@ -21,7 +21,6 @@ export const AssetInput: React.FC<AssetInputProps> = ({ register, error }) => {
         error={error?.message}
         helperText="만 원 단위로 입력해주세요. (예: 5000)"
       />
-      <p className="mt-1 text-sm text-gray-500">단위: 만 원</p>
     </div>
   );
 };

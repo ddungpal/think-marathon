@@ -33,7 +33,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
       <div className="bg-white pt-20 pb-24 border-b border-[#E5E8EB]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-2xl md:text-3xl font-bold text-[#191F28] mb-14 tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#191F28] mb-14 tracking-tight leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
               {input.name}님의 생각 결과
             </h1>
             {stage && <StageGauge stage={stage} />}
@@ -49,6 +49,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
             {result.frequent_thoughts && (
               <ResultSection
                 title="내가 자주 하는 생각"
+                emoji="💭"
                 content={result.frequent_thoughts}
                 color="blue"
               />
@@ -57,6 +58,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
             {result.unknown_things && (
               <ResultSection
                 title="이 구간에서 잘 모르는 것"
+                emoji="❓"
                 content={result.unknown_things}
                 color="amber"
               />
@@ -65,6 +67,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
             {result.must_learn && (
               <ResultSection
                 title="반드시 배워야 하는 것"
+                emoji="📚"
                 content={result.must_learn}
                 color="purple"
               />
@@ -73,6 +76,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
             {result.recommended_training && (
               <ResultSection
                 title="추천 생각 훈련"
+                emoji="🧠"
                 content={result.recommended_training}
                 color="teal"
               />
@@ -81,6 +85,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
             {result.avoid_studies && (
               <ResultSection
                 title="지금은 피해야 할 공부"
+                emoji="🔍"
                 content={result.avoid_studies}
                 color="red"
               />
@@ -96,7 +101,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
           <div className="mt-16 pt-8 border-t border-[#E5E8EB]">
             <Button 
               onClick={handleRestart} 
-              variant="secondary" 
+              variant="primary" 
               size="large"
               className="w-full max-w-md mx-auto block"
             >

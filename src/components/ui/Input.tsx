@@ -25,6 +25,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             focus:outline-none focus:bg-[#F9FAFB] transition-colors duration-200
             ${error ? 'border-[#F04452]' : 'border-[#E5E8EB]'}
             placeholder:text-[#B0B8C1]
+            [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none
+            [-moz-appearance:textfield]
             ${className}
           `}
           aria-invalid={error ? 'true' : 'false'}
