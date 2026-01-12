@@ -29,7 +29,7 @@ export const StageGauge: React.FC<StageGaugeProps> = ({ stage }) => {
       {/* Stage Label */}
       <div className="text-center mb-10">
         <div 
-          className="inline-block px-6 py-3 rounded-2xl font-bold text-2xl md:text-3xl mb-4"
+          className="inline-block px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-2xl font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl mb-3 sm:mb-3.5 md:mb-4"
           style={{
             backgroundColor: colors.primary + '15',
             color: colors.primary,
@@ -37,10 +37,10 @@ export const StageGauge: React.FC<StageGaugeProps> = ({ stage }) => {
         >
           {stage.type}
         </div>
-        <p className="text-[#191F28] text-sm sm:text-base md:text-lg font-semibold mb-2 whitespace-nowrap overflow-hidden text-ellipsis">
+        <p className="text-[#191F28] text-xs sm:text-sm md:text-base lg:text-lg font-semibold mb-2 px-2">
           총 {totalStages}단계 중 당신의 레벨은 <span className="font-bold" style={{ color: colors.primary }}>{currentLevel}단계</span>입니다
         </p>
-        <p className="text-[#8B95A1] text-base">{stage.description}</p>
+        <p className="text-[#8B95A1] text-xs sm:text-sm md:text-base px-2">{stage.description}</p>
       </div>
 
       {/* Progress Gauge */}

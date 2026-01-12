@@ -7,19 +7,16 @@ export default function Home() {
         <div className="max-w-2xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-6xl font-bold text-[#191F28] mb-5 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#191F28] mb-5 leading-tight">
               생각 마라톤
             </h1>
-            <p className="text-xl md:text-2xl text-[#4E5968] mb-4 font-medium">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-[#4E5968] mb-4 font-medium">
               당신의 고민을 깊게 생각하는 시간
-            </p>
-            <p className="text-sm sm:text-base text-[#8B95A1] max-w-xl mx-auto leading-relaxed whitespace-nowrap">
-              자신의 고민에 대해 깊게 생각하고 해결책을 가져갈 수 있는 생각하는 시간을 갖게 해드립니다.
             </p>
           </div>
 
           {/* Form Section */}
-          <div className="bg-white rounded-3xl p-8 md:p-12">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 md:p-12">
             <DiagnosisForm />
           </div>
 

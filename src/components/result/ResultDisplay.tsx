@@ -30,10 +30,10 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
   return (
     <main className="min-h-screen bg-[#F7F8FA]">
       {/* Hero Section with Stage Badge */}
-      <div className="bg-white pt-20 pb-24 border-b border-[#E5E8EB]">
+      <div className="bg-white pt-12 sm:pt-16 md:pt-20 pb-16 sm:pb-20 md:pb-24 border-b border-[#E5E8EB]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#191F28] mb-14 tracking-tight leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-[#191F28] mb-10 sm:mb-12 md:mb-14 tracking-tight leading-tight">
               {input.name}님의 생각 결과
             </h1>
             {stage && <StageGauge stage={stage} />}
@@ -42,7 +42,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, input, sta
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-10 sm:py-12 md:py-16">
         <div className="max-w-4xl mx-auto">
           {/* Result Sections - 요청한 항목만 표시 */}
           <div className="space-y-5 md:space-y-6">

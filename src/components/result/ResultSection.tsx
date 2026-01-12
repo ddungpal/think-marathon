@@ -100,39 +100,43 @@ export const ResultSection: React.FC<ResultSectionProps> = ({
       hover:shadow-md
       transition-shadow
       duration-200
-      p-6
-      md:p-8
+      p-4
+      sm:p-5
+      md:p-6
+      lg:p-8
     `}>
-      <div className="mb-5">
+      <div className="mb-3 sm:mb-4 md:mb-5">
         <h3 className={`
-          text-base
-          sm:text-lg 
-          md:text-xl 
+          text-sm
+          sm:text-base
+          md:text-lg 
+          lg:text-xl 
           font-bold 
           ${colors.title} 
           leading-tight
           tracking-tight
-          whitespace-nowrap
-          overflow-hidden
-          text-ellipsis
           flex
           items-center
-          gap-2
+          gap-1.5
+          sm:gap-2
         `}>
-          {emoji && <span className="text-xl md:text-2xl flex-shrink-0">{emoji}</span>}
-          <span>{title}</span>
+          {emoji && <span className="text-base sm:text-lg md:text-xl lg:text-2xl flex-shrink-0">{emoji}</span>}
+          <span className="break-words">{title}</span>
         </h3>
       </div>
       
-      <div className={`space-y-3.5 ${colors.text}`}>
+      <div className={`space-y-2.5 sm:space-y-3 md:space-y-3.5 ${colors.text}`}>
         {paragraphs.map((paragraph, index) => (
           <p 
             key={index} 
             className="
-              text-sm 
+              text-xs
+              sm:text-sm 
               md:text-base
               text-[#4E5968] 
-              leading-[1.7]
+              leading-[1.6]
+              sm:leading-[1.65]
+              md:leading-[1.7]
               font-normal
               tracking-normal
             "
