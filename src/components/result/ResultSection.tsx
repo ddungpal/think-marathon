@@ -86,8 +86,11 @@ export const ResultSection: React.FC<ResultSectionProps> = ({
 }) => {
   const colors = colorClasses[color];
   
-  // 문단으로 분리
-  const paragraphs = content.split('\n\n').filter(p => p.trim());
+  // 핵심 문장과 이유 설명 분리
+  // 첫 번째 줄바꿈을 기준으로 핵심 문장과 이유 설명을 분리
+  const parts = content.split(/\n+/).map(s => s.trim()).filter(s => s.length > 0);
+  const coreSentence = parts[0] || content; // 첫 번째 문장이 핵심 문장
+  const reasonExplanation = parts.slice(1).join(' '); // 나머지가 이유 설명
   
   return (
     <div className={`
@@ -125,25 +128,48 @@ export const ResultSection: React.FC<ResultSectionProps> = ({
         </h3>
       </div>
       
-      <div className={`space-y-2.5 sm:space-y-3 md:space-y-3.5 ${colors.text}`}>
-        {paragraphs.map((paragraph, index) => (
+      <div className={`space-y-3 sm:space-y-4 md:space-y-5 ${colors.text}`}>
+        {/* 핵심 문장 */}
+        <div className="flex items-start gap-2 sm:gap-3">
+          <span className="text-base sm:text-lg md:text-xl flex-shrink-0 mt-0.5">💡</span>
           <p 
-            key={index} 
             className="
-              text-xs
-              sm:text-sm 
-              md:text-base
-              text-[#4E5968] 
+              text-sm
+              sm:text-base 
+              md:text-lg
+              text-[#191F28] 
               leading-[1.6]
               sm:leading-[1.65]
               md:leading-[1.7]
-              font-normal
+              font-semibold
               tracking-normal
+              flex-1
             "
           >
-            {paragraph.trim()}
+            {coreSentence}
           </p>
-        ))}
+        </div>
+        
+        {/* 이유 설명 */}
+        {reasonExplanation && (
+          <div className="pl-5 sm:pl-6 md:pl-7">
+            <p 
+              className="
+                text-xs
+                sm:text-sm 
+                md:text-base
+                text-[#4E5968] 
+                leading-[1.6]
+                sm:leading-[1.65]
+                md:leading-[1.7]
+                font-normal
+                tracking-normal
+              "
+            >
+              {reasonExplanation}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
